@@ -13,12 +13,12 @@ Dim fso         As Object
 Dim strFileName As String
 
     Do
-        strFileName = Application.GetSaveAsFilename("data.js", , , "出力ファイルを指定")
+        strFileName = Application.GetSaveAsFilename("data.js", , , "Save file as...")
         If CStr(strFileName) <> "False" Then
             Dim strDir      As String
             strDir = Dir(strFileName)
             If strDir <> "" Then
-                If MsgBox("既存のファイルを上書きしますか？", vbOKCancel + vbQuestion) = vbCancel Then
+                If MsgBox("Overwrite existing file?", vbOKCancel + vbQuestion) = vbCancel Then
                     Exit Sub    ' cancel
                 Else
                     Exit Do     ' proceed
@@ -44,7 +44,7 @@ Dim strFileName As String
     Call fso.saveToFile(strFileName, 2)
     Call fso.Close
     
-    Call MsgBox("完了！", vbInformation)
+    Call MsgBox("Completed!!", vbInformation)
 
 End Sub
 
