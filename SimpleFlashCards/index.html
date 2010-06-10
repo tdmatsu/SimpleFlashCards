@@ -39,7 +39,8 @@ function FlashCards()
 {
 	// variables
 	var m_entries = null;
-	var m_entries_cnt = null;
+	var m_entries_cnt = 0;
+	var m_remaining_entries_cnt = 0;
 	var m_strExitFunction;
 	var m_intCurIndex;
 
@@ -58,11 +59,12 @@ function FlashCards()
 	this.setEntries = function(entries){
 		m_entries = entries;
 		m_entries_cnt = entries.length;
+		m_remaining_entries_cnt = entries.length;
 	}
 	
 	var updateCount = function()
 	{
-		$("section_info").innerHTML = m_entries.length + "/" + m_entries_cnt + " entrie(s) left<br><a href='javascript:" + m_strExitFunction + "'>Go back to Start Page</a>";
+		$("section_info").innerHTML = m_remaining_entries_cnt + "/" + m_entries_cnt + " entrie(s) left<br><a href='javascript:" + m_strExitFunction + "'>Go back to Start Page</a>";
 	}
 	
 	this.startFlashCard = function()
@@ -107,7 +109,7 @@ function FlashCards()
 			elmText2.onclick = function ()
 			{
 				$("entry_" + this.entryIndex).style.display = "none";
-				m_entries.splice(this.entryIndex, 1);
+				m_remaining_entries_cnt--;
 				updateCount();
 			}
 
@@ -163,14 +165,8 @@ function init()
 //----------------------------------------------------------------------------------------------------------------------
 function startFlashCards(index)
 {
-	// copy the entries
-	var entries = new Array();
-	for(var i = 0; i < FlashCardCollection[index].length; i++){
-	 	entries[i] = FlashCardCollection[index][i];
-	}
-
 	flashCards = new FlashCards();
-	flashCards.setEntries(entries);
+	flashCards.setEntries(FlashCardCollection[index]);
 	flashCards.setExitFunction("gotoStartPage();");
 	flashCards.setRegion($("section_flashcards"));
 	flashCards.startFlashCard();
