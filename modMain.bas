@@ -1,14 +1,67 @@
 Attribute VB_Name = "modMain"
-Option Explicit
-
-
 '
 ' Save this module to
 ' C:\Documents and Settings\<user>\Application Data\Microsoft\Excel\XLSTART\Personal.xls
 '
 
-Sub CreateDataJs()
+Option Explicit
+
+'
+' Create FlashCards as single HTML file
+'
+Sub CreateSingleHtml()
+
+Dim fso         As Object
+Dim strFileName As String
     
+    Do
+        strFileName = Application.GetSaveAsFilename("flashcards.html", "HTML File (*.html),*.html", , "Save file as...")
+        If CStr(strFileName) <> "False" Then
+            Dim strDir      As String
+            strDir = Dir(strFileName)
+            If strDir <> "" Then
+                If MsgBox("Overwrite existing file?", vbOKCancel + vbQuestion) = vbCancel Then
+                    Exit Sub    ' cancel
+                Else
+                    Exit Do     ' proceed
+                End If
+            Else
+                Exit Do      ' proceed
+            End If
+        Else
+            Exit Sub    ' cancel
+        End If
+    Loop
+
+Dim shtHtml As Worksheet
+Dim strHtml As String
+
+    Set shtHtml = ThisWorkbook.Sheets("html")
+    
+    Debug.Print shtHtml.Name
+    strHtml = shtHtml.Range("A1").Value + MakeExportData + shtHtml.Range("A2").Value
+
+    ' open the output stream
+    Set fso = CreateObject("ADODB.Stream")
+    fso.Type = 2
+    fso.Charset = "utf-8"
+    Call fso.Open
+
+    ' write the data
+    Call fso.writeText(strHtml)
+
+    ' save the file and close
+    Call fso.saveToFile(strFileName, 2)
+    Call fso.Close
+
+    Call MsgBox("Completed!!", vbInformation)
+
+
+End Sub
+
+
+
+Sub CreateDataJs()
 Dim fso         As Object
 Dim strFileName As String
 
