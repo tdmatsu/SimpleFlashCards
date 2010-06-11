@@ -6,6 +6,7 @@
 
 <style type="text/css">
 <!--
+/* style for SeriesS60/5.x */
 body              { color: #000000; }
 
 div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 10px; cursor: pointer; }
@@ -18,6 +19,25 @@ div.collection_itemcount { font-size:14pt; }
 div.class_entry	  { margin:10px; }
 div.entry_text1   { font-size:24pt; background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; cursor: pointer; }
 div.entry_text2   { font-size:24pt; background-color: #DDEEFF; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; cursor: pointer; }
+
+-->
+</style>
+
+<style type="text/css">
+<!--
+/* style for SeriesS60/3.x */
+body              { color: #000000; }
+
+div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 5px; cursor: pointer; }
+div.collection_name      { font-size:10pt; color: #6699CC; }
+div.collection_itemcount { font-size:8pt; }
+
+#section_info     { font-size:8pt; float:right; margin: 5px; }
+#section_return   { font-size:8pt; float:left; background-color: #FFFFEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 5px; margin: 5px; cursor: pointer; }
+#section_cards    { clear: both; }
+div.class_entry	  { margin:5px; }
+div.entry_text1   { font-size:12pt; background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 1px; cursor: pointer; }
+div.entry_text2   { font-size:12pt; background-color: #DDEEFF; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 1px; cursor: pointer; }
 
 -->
 </style>
@@ -162,6 +182,15 @@ function init()
 	// WRT specific: hide the softkeys
 	if (navigator.userAgent.indexOf("Series60/5.0") != -1){
 		window.menu.hideSoftkeys();
+	}
+	
+	// apply stylesheets
+	if (navigator.userAgent.indexOf("Series60/3") != -1){
+		document.styleSheets[0].disabled=true;
+		document.styleSheets[1].disabled=false;
+	}else{
+		document.styleSheets[0].disabled=false;
+		document.styleSheets[1].disabled=true;
 	}
 
 	// initialize the start page
