@@ -8,18 +8,14 @@
 <!--
 body              { color: #000000; }
 
-a:link            { color: #6699CC; }
-a:visited         { color: #6699CC; }
-a:hover           { color: #6699CC; }
-a:active          { color: #6699CC; }
+div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 10px; cursor: pointer; }
+div.collection_name      { font-size:20pt; color: #6699CC; font-bold: true; }
+div.collection_itemcount { font-size:14pt; }
 
 #section_info     { font-size:16pt; }
-#collection_name  { font-size:20pt; }
-#collection_count { font-size:14pt; }
 div.class_entry	  { margin:10px; }
-
-div.entry_text1   { font-size:24pt; background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; }
-div.entry_text2   { font-size:24pt; background-color: #DDEEFF; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; }
+div.entry_text1   { font-size:24pt; background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; cursor: pointer; }
+div.entry_text2   { font-size:24pt; background-color: #DDEEFF; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; cursor: pointer; }
 
 -->
 </style>
@@ -73,8 +69,6 @@ function FlashCards()
 	{
 		_log("startFlashCard()");
 		
-		var parentElm = $("section_cards");
-		
 		for (var i = 0; i < m_entries.length; i++){
 			var elm = document.createElement("div");
 			elm.id = "entry_" + i;
@@ -119,7 +113,7 @@ function FlashCards()
 			elm.appendChild(elmText1);
 			elm.appendChild(elmText2);
 			
-			parentElm.appendChild(elm);
+			$("section_cards").appendChild(elm);
 		}
 		
 		updateCount();
@@ -153,11 +147,28 @@ function init()
 	}
 
 	// initialize the start page
-	var strwrk = "";
 	for (var i = 0; i < FlashCardCollectionNames.length; i++){
-		strwrk = strwrk + "<span id='collection_name'><a href='javascript:startFlashCards(" + i + ");'>" + FlashCardCollectionNames[i] + "</a></span><br>";
-		strwrk = strwrk + "<span id='collection_count'>" +  FlashCardCollection[i].length + " entries</span><br><br>";
+		var elm = document.createElement("div");
+		elm.className = "collection_entry";
+		elm.entryIndex = i;
+		elm.onclick = function(){
+			startFlashCards(this.entryIndex);
+		}
+	
+		var elmCollectionName = document.createElement("div");
+		elmCollectionName.className = "collection_name";
+		elmCollectionName.innerHTML = FlashCardCollectionNames[i];
+
+		var elmCollectionItemCount = document.createElement("div");
+		elmCollectionItemCount.className = "collection_itemcount";
+		elmCollectionItemCount.innerHTML = FlashCardCollection[i].length + " entries";
+
+		elm.appendChild(elmCollectionName);
+		elm.appendChild(elmCollectionItemCount);
+		
+		$("section_startpage").appendChild(elm);
 	}
+
 	$("section_startpage").innerHTML = strwrk;
 }
 
