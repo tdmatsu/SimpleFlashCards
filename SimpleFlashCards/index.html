@@ -9,10 +9,12 @@
 body              { color: #000000; }
 
 div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 10px; cursor: pointer; }
-div.collection_name      { font-size:20pt; color: #6699CC; font-bold: true; }
+div.collection_name      { font-size:20pt; color: #6699CC; }
 div.collection_itemcount { font-size:14pt; }
 
-#section_info     { font-size:16pt; }
+#section_info     { font-size:12pt; float:right; margin: 10px; }
+#section_return   { font-size:12pt; float:left; background-color: #FFFFEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 5px; margin: 10px; cursor: pointer; }
+#section_cards    { clear: both; }
 div.class_entry	  { margin:10px; }
 div.entry_text1   { font-size:24pt; background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; cursor: pointer; }
 div.entry_text2   { font-size:24pt; background-color: #DDEEFF; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 3px; cursor: pointer; }
@@ -39,19 +41,29 @@ function FlashCards()
 	var m_entries = null;
 	var m_entries_cnt = 0;
 	var m_remaining_entries_cnt = 0;
-	var m_strExitFunction;
-	var m_intCurIndex;
+	var m_region;
 
-	this.setExitFunction = function(str){
-		m_strExitFunction = str
-	}
-	
-	this.setRegion = function(region){
-		var strwrk = "";
-		strwrk += "<div id='section_info' align='right'></div><br>";
-		strwrk += "<div id='section_cards'></div><br>";
+	this.initialize = function(region, exitFunction){
 		
-		region.innerHTML = strwrk;
+		
+		m_region = region;
+		
+		var elmInfo = document.createElement("div");
+		elmInfo.id = "section_info";
+		elmInfo.align = "right";
+
+		var elmReturn = document.createElement("span");
+		elmReturn.id = "section_return";
+		elmReturn.align = "right";
+		elmReturn.innerHTML = "Back to Start Page";
+		elmReturn.onclick = exitFunction;
+
+		var elmMain = document.createElement("div");
+		elmMain.id = "section_cards";
+		
+		m_region.appendChild(elmInfo);
+		m_region.appendChild(elmReturn);
+		m_region.appendChild(elmMain);
 	}
 	
 	this.setEntries = function(entries){
@@ -62,12 +74,18 @@ function FlashCards()
 	
 	var updateCount = function()
 	{
-		$("section_info").innerHTML = m_remaining_entries_cnt + "/" + m_entries_cnt + " entrie(s) left<br><a href='javascript:" + m_strExitFunction + "'>Go back to Start Page</a>";
+		$("section_info").innerHTML = m_remaining_entries_cnt + "/" + m_entries_cnt + " card(s) left<br>";
 	}
 	
-	this.startFlashCard = function()
+	this.startFlashCard = function(entries)
 	{
 		_log("startFlashCard()");
+
+		m_entries = entries;
+		m_entries_cnt = entries.length;
+		m_remaining_entries_cnt = entries.length;
+		
+		$("section_cards").innerHTML = "";
 		
 		for (var i = 0; i < m_entries.length; i++){
 			var elm = document.createElement("div");
@@ -121,7 +139,7 @@ function FlashCards()
 }
 
 
-var flashCards;     // the flash card data
+var flashCards = new FlashCards();     // the flash card data
 var DEBUG = false;  // Debug flag
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -168,6 +186,10 @@ function init()
 		
 		$("section_startpage").appendChild(elm);
 	}
+
+	flashCards.initialize($("section_flashcards"), gotoStartPage);
+	
+	gotoStartPage();
 }
 
 
@@ -176,11 +198,7 @@ function init()
 //----------------------------------------------------------------------------------------------------------------------
 function startFlashCards(index)
 {
-	flashCards = new FlashCards();
-	flashCards.setEntries(FlashCardCollection[index]);
-	flashCards.setExitFunction("gotoStartPage();");
-	flashCards.setRegion($("section_flashcards"));
-	flashCards.startFlashCard();
+	flashCards.startFlashCard(FlashCardCollection[index]);
 	
 	$("section_startpage").style.display = "none";
 	$("section_flashcards").style.display = "block";
@@ -191,7 +209,6 @@ function startFlashCards(index)
 //----------------------------------------------------------------------------------------------------------------------
 function gotoStartPage()
 {
-	flashCards = null;
 	$("section_startpage").style.display = "block";
 	$("section_flashcards").style.display = "none";
 }
