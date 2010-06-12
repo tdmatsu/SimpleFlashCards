@@ -301,9 +301,7 @@ function gotoStartPage()
 
 var intCurrentMenuIndex = -1;
 
-document.onkeydown = keyDown;
-
-function keyDown(e)
+document.onkeydown = function(e)
 {
 	// TODO: enable only for S60 env
 	if ($("section_startpage").style.display == "block"){
@@ -314,7 +312,8 @@ function keyDown(e)
 	e.returnValue = false;
 }
 
-document.onkeypress = function(e){
+document.onkeypress = function(e)
+{
 	e.returnValue = false;
 }
 
@@ -350,11 +349,6 @@ function keyDown_startPage(e)
 			startFlashCards(intCurrentMenuIndex);
 		}
 	}
-}
-
-window.onscroll=function()
-{
-//	alert(window.pageYOffset);
 }
 
 //--> 
