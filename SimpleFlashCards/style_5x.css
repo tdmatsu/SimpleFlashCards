@@ -1,0 +1,12 @@
+body              { color: #000000; }
+
+div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 10px; cursor: pointer; }
+div.collection_name      { font-size:20pt; color: #6699CC; }
+div.collection_itemcount { font-size:14pt; }
+
+#section_info     { font-size:12pt; float:right; margin: 10px; }
+#section_return   { font-size:12pt; float:left; background-color: #FFFFEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 5px; margin: 10px; cursor: pointer; }
+#section_cards    { clear: both; }
+div.class_entry	  { margin:10px; padding:1px; background-color: #BBBBBB }
+div.entry_text1   { font-size:24pt; background-color: #EEEEEE; padding: 8px; cursor: pointer; }
+div.entry_text2   { font-size:24pt; background-color: #DDEEFF; padding: 8px; cursor: pointer; }
