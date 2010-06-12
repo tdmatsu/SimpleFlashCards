@@ -85,6 +85,10 @@ function FlashCards()
 					$("text2_" + this.entryIndex).style.display = "none";
 					this.currentState = STATE_CLOSED;
 				}
+				var diff = this.offsetTop + this.offsetHeight - document.body.scrollTop - window.innerHeight;
+				if (diff > 0){
+					window.scrollBy(0, diff);
+				}
 			}
 
 			elm.setHidden = function()
