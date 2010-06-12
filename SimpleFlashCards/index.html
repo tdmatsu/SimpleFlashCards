@@ -62,6 +62,8 @@ function FlashCards()
 	var m_entries_cnt = 0;
 	var m_remaining_entries_cnt = 0;
 	var m_region;
+	var m_intCurrentIndex = -1;
+	var m_exitFunction;
 
 	this.initialize = function(region, exitFunction){
 		
@@ -84,6 +86,8 @@ function FlashCards()
 		m_region.appendChild(elmInfo);
 		m_region.appendChild(elmReturn);
 		m_region.appendChild(elmMain);
+		
+		m_exitFunction = exitFunction;
 	}
 	
 	this.setEntries = function(entries){
@@ -104,6 +108,7 @@ function FlashCards()
 		m_entries = entries;
 		m_entries_cnt = entries.length;
 		m_remaining_entries_cnt = entries.length;
+		m_intCurrentIndex = -1;
 		
 		$("section_cards").innerHTML = "";
 		
@@ -156,6 +161,55 @@ function FlashCards()
 		
 		updateCount();
 	}
+
+	this.handleKeyDown = function(e)
+	{
+		if (e.keyCode == 8){
+			m_exitFunction();
+			return;
+		}else if (e.keyCode == 38 || e.keyCode ==40){	// up / down
+			var updatedIndex = m_intCurrentIndex;
+			if (updatedIndex == -1){
+				m_intCurrentIndex = 0;
+				updatedIndex = 0;
+			}else{
+				if (e.keyCode == 38){	// up
+					updatedIndex--;
+					if (updatedIndex < 0){
+						updatedIndex = 0;
+					}
+				}else if (e.keyCode == 40){	// down
+					updatedIndex++;
+					if (updatedIndex >= $("section_cards").childNodes.length){
+						updatedIndex = $("section_cards").childNodes.length - 1;
+					}
+				}
+			}
+			
+			// update cursor
+			if (m_intCurrentIndex != updatedIndex){
+				$("section_cards").childNodes.item(m_intCurrentIndex).style.backgroundColor = "#BBBBBB";
+			}
+			$("section_cards").childNodes.item(updatedIndex).style.backgroundColor = "#FF6666";
+			
+			// scroll
+			var offset = $("section_cards").childNodes.item(updatedIndex).offsetTop;
+			if (e.keyCode == 38) {
+				if (m_intCurrentIndex == 0 && updatedIndex == 0){
+					window.scroll(0, 0);
+				}else if(offset < (window.pageYOffset +(window.innerHeight * 0.2))){
+					window.scroll(0, offset - (window.innerHeight * 0.2));
+				}
+			}else if (e.keyCode == 40 && offset > (window.pageYOffset + (window.innerHeight * 0.7))){
+				window.scroll(0, offset - (window.innerHeight * 0.7));
+			}
+			
+			// update index
+			m_intCurrentIndex = updatedIndex;
+		}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
+		
+		}
+	}
 }
 
 
@@ -179,9 +233,12 @@ function _log(str_log)
 //----------------------------------------------------------------------------------------------------------------------
 function init()
 {
-	// WRT specific: hide the softkeys
-	if (navigator.userAgent.indexOf("Series60/5.0") != -1){
-		window.menu.hideSoftkeys();
+	// WRT specific settings
+	if (navigator.userAgent.indexOf("Series60/5.0") != -1 || navigator.userAgent.indexOf("Series60/3") != -1){
+		widget.setNavigationEnabled(false);
+		if (navigator.userAgent.indexOf("Series60/5.0") != -1){
+			window.menu.hideSoftkeys();
+		}
 	}
 	
 	// apply stylesheets
@@ -240,6 +297,64 @@ function gotoStartPage()
 {
 	$("section_startpage").style.display = "block";
 	$("section_flashcards").style.display = "none";
+}
+
+var intCurrentMenuIndex = -1;
+
+document.onkeydown = keyDown;
+
+function keyDown(e)
+{
+	// TODO: enable only for S60 env
+	if ($("section_startpage").style.display == "block"){
+		keyDown_startPage(e);
+	}else if ($("section_flashcards").style.display == "block"){
+		flashCards.handleKeyDown(e);
+	}
+	e.returnValue = false;
+}
+
+document.onkeypress = function(e){
+	e.returnValue = false;
+}
+
+function keyDown_startPage(e)
+{
+	var updatedIndex = intCurrentMenuIndex;
+	if (e.keyCode == 38 || e.keyCode == 40){
+		if (updatedIndex == -1){
+			intCurrentMenuIndex = 0;
+			updatedIndex = 0;
+		}else{
+			if (e.keyCode == 38){	// up
+				updatedIndex--;
+				if (updatedIndex < 0){
+					updatedIndex = 0;
+				}
+			}else if (e.keyCode == 40){	// down
+				updatedIndex++;
+				if (updatedIndex >= $("section_startpage").childNodes.length){
+					updatedIndex = $("section_startpage").childNodes.length - 1;
+				}
+			}
+		}
+
+		if (intCurrentMenuIndex != updatedIndex){
+			$("section_startpage").childNodes.item(intCurrentMenuIndex).style.borderColor = "#BBBBBB";
+		}
+		$("section_startpage").childNodes.item(updatedIndex).style.borderColor = "#FF6666";
+
+		intCurrentMenuIndex = updatedIndex;
+	}else if(e.charCode == 63557 || e.keyCode == 13){
+		if (intCurrentMenuIndex != -1){
+			startFlashCards(intCurrentMenuIndex);
+		}
+	}
+}
+
+window.onscroll=function()
+{
+//	alert(window.pageYOffset);
 }
 
 //--> 
