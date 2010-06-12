@@ -14,6 +14,15 @@ function FlashCards()
 	var m_intCurrentIndex = -1;
 	var m_exitFunction;
 
+	// states
+	var STATE_CLOSED = 0;
+	var STATE_OPEN = 1;
+	var STATE_HIDDEN = 2;
+	
+	// focus colors
+	var COLOR_FOCUSED = "#FF6666";
+	var COLOR_UNFOCUSED = "#BBBBBB";
+
 	this.initialize = function(region, exitFunction){
 		
 		
@@ -65,6 +74,26 @@ function FlashCards()
 			var elm = document.createElement("div");
 			elm.id = "entry_" + i;
 			elm.className = "class_entry";
+			elm.entryIndex = i;
+			elm.currentState = STATE_CLOSED;
+			elm.toggleOpenClose = function()
+			{
+				if (this.currentState == STATE_CLOSED){
+					$("text2_" + this.entryIndex).style.display = "block";
+					this.currentState = STATE_OPEN;
+				}else if (this.currentState == STATE_OPEN){
+					$("text2_" + this.entryIndex).style.display = "none";
+					this.currentState = STATE_CLOSED;
+				}
+			}
+
+			elm.setHidden = function()
+			{
+				this.style.display = "none";
+				this.currentState = STATE_HIDDEN;
+				m_remaining_entries_cnt--;
+				updateCount();
+			}
 
 			var elmIndex = document.createElement("div");
 			elmIndex.id = elm.id + "_index";
@@ -80,11 +109,7 @@ function FlashCards()
 			
 			elmText1.onclick = function ()
 			{
-				if ($("text2_" + this.entryIndex).style.display == "none"){
-					$("text2_" + this.entryIndex).style.display = "block";
-				}else{
-					$("text2_" + this.entryIndex).style.display = "none";
-				}
+				$("entry_" + this.entryIndex).toggleOpenClose();
 			}
 
 			var elmText2 = document.createElement("div");
@@ -96,9 +121,7 @@ function FlashCards()
 
 			elmText2.onclick = function ()
 			{
-				$("entry_" + this.entryIndex).style.display = "none";
-				m_remaining_entries_cnt--;
-				updateCount();
+				$("entry_" + this.entryIndex).setHidden();
 			}
 
 			elm.appendChild(elmIndex);
@@ -123,26 +146,36 @@ function FlashCards()
 				updatedIndex = 0;
 			}else{
 				if (e.keyCode == 38){	// up
-					updatedIndex--;
-					if (updatedIndex < 0){
-						updatedIndex = 0;
+					while(1){
+						updatedIndex--;
+						if (updatedIndex < 0){
+							updatedIndex = m_intCurrentIndex;
+							break;
+						}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
+							break;
+						}
 					}
 				}else if (e.keyCode == 40){	// down
-					updatedIndex++;
-					if (updatedIndex >= $("section_cards").childNodes.length){
-						updatedIndex = $("section_cards").childNodes.length - 1;
+					while(1){
+						updatedIndex++;
+						if (updatedIndex >= $("section_cards").childNodes.length){
+							updatedIndex = m_intCurrentIndex;
+							break;
+						}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
+							break;
+						}
 					}
 				}
 			}
 			
 			// update cursor
 			if (m_intCurrentIndex != updatedIndex){
-				$("section_cards").childNodes.item(m_intCurrentIndex).style.backgroundColor = "#BBBBBB";
+				$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
 			}
-			$("section_cards").childNodes.item(updatedIndex).style.backgroundColor = "#FF6666";
+			$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
 			
 			// scroll
-			var offset = $("section_cards").childNodes.item(updatedIndex).offsetTop;
+			var offset = $("entry_" + updatedIndex).offsetTop;
 			if (e.keyCode == 38) {
 				if (m_intCurrentIndex == 0 && updatedIndex == 0){
 					window.scroll(0, 0);
@@ -155,8 +188,50 @@ function FlashCards()
 			
 			// update index
 			m_intCurrentIndex = updatedIndex;
+		}else if(e.keyCode == 39){	// right
+			if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
+				$("entry_" + m_intCurrentIndex).toggleOpenClose();
+			}
+		}else if(e.keyCode == 37){	// left
+			if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
+				$("entry_" + m_intCurrentIndex).toggleOpenClose();
+			}
 		}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
-		
+			if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
+				$("entry_" + m_intCurrentIndex).toggleOpenClose();
+			}else if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
+				// find the next index
+				var updatedIndex = m_intCurrentIndex;
+				while(1){
+					updatedIndex++;
+					if (updatedIndex >= $("section_cards").childNodes.length){
+						updatedIndex = m_intCurrentIndex;
+						break;
+					}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
+						break;
+					}
+				}
+				if (updatedIndex == m_intCurrentIndex){
+					while(1){
+						updatedIndex--;
+						if (updatedIndex < 0){
+							updatedIndex = m_intCurrentIndex;
+							break;
+						}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
+							break;
+						}
+					}
+				}
+				$("entry_" + m_intCurrentIndex).setHidden();
+				if (updatedIndex == m_intCurrentIndex){
+					$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+					m_intCurrentIndex = -1;
+				}else{
+					$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+					$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
+					m_intCurrentIndex = updatedIndex;
+				}
+			}
 		}
 	}
 }
