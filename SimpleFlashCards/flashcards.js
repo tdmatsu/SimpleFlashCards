@@ -133,6 +133,36 @@ function FlashCards()
 		
 		updateCount();
 	}
+	
+	var getPreviousIndex = function()
+	{
+		var startIndex = m_intCurrentIndex;
+		while(1){
+			startIndex--;
+			if (startIndex < 0){
+				startIndex = m_intCurrentIndex;
+				break;
+			}else if ($("entry_" + startIndex).currentState != STATE_HIDDEN){
+				break;
+			}
+		}
+		return startIndex;
+	}
+	
+	var getNextIndex = function()
+	{
+		var startIndex = m_intCurrentIndex;
+		while(1){
+			startIndex++;
+			if (startIndex >= $("section_cards").childNodes.length){
+				startIndex = m_intCurrentIndex;
+				break;
+			}else if ($("entry_" + startIndex).currentState != STATE_HIDDEN){
+				break;
+			}
+		}
+		return startIndex;
+	}
 
 	this.handleKeyDown = function(e)
 	{
@@ -140,31 +170,15 @@ function FlashCards()
 			m_exitFunction();
 			return;
 		}else if (e.keyCode == 38 || e.keyCode ==40){	// up / down
-			var updatedIndex = m_intCurrentIndex;
-			if (updatedIndex == -1){
+			var updatedIndex;
+			if (m_intCurrentIndex == -1){
 				m_intCurrentIndex = 0;
 				updatedIndex = 0;
 			}else{
 				if (e.keyCode == 38){	// up
-					while(1){
-						updatedIndex--;
-						if (updatedIndex < 0){
-							updatedIndex = m_intCurrentIndex;
-							break;
-						}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
-							break;
-						}
-					}
+					updatedIndex = getPreviousIndex();
 				}else if (e.keyCode == 40){	// down
-					while(1){
-						updatedIndex++;
-						if (updatedIndex >= $("section_cards").childNodes.length){
-							updatedIndex = m_intCurrentIndex;
-							break;
-						}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
-							break;
-						}
-					}
+					updatedIndex = getNextIndex();
 				}
 			}
 			
@@ -188,48 +202,36 @@ function FlashCards()
 			
 			// update index
 			m_intCurrentIndex = updatedIndex;
-		}else if(e.keyCode == 39){	// right
-			if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
-				$("entry_" + m_intCurrentIndex).toggleOpenClose();
-			}
-		}else if(e.keyCode == 37){	// left
-			if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
-				$("entry_" + m_intCurrentIndex).toggleOpenClose();
-			}
-		}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
-			if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
-				$("entry_" + m_intCurrentIndex).toggleOpenClose();
-			}else if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
-				// find the next index
-				var updatedIndex = m_intCurrentIndex;
-				while(1){
-					updatedIndex++;
-					if (updatedIndex >= $("section_cards").childNodes.length){
-						updatedIndex = m_intCurrentIndex;
-						break;
-					}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
-						break;
+		}else{
+			if(m_intCurrentIndex != -1){
+				if(e.keyCode == 39){	// right
+					if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
+						$("entry_" + m_intCurrentIndex).toggleOpenClose();
 					}
-				}
-				if (updatedIndex == m_intCurrentIndex){
-					while(1){
-						updatedIndex--;
-						if (updatedIndex < 0){
-							updatedIndex = m_intCurrentIndex;
-							break;
-						}else if ($("entry_" + updatedIndex).currentState != STATE_HIDDEN){
-							break;
+				}else if(e.keyCode == 37){	// left
+					if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
+						$("entry_" + m_intCurrentIndex).toggleOpenClose();
+					}
+				}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
+					if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
+						$("entry_" + m_intCurrentIndex).toggleOpenClose();
+					}else if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
+						// find the next index
+						var updatedIndex = m_intCurrentIndex;
+						updatedIndex = getNextIndex();
+						if (updatedIndex == m_intCurrentIndex){
+							updatedIndex = getPreviousIndex();
+						}
+						$("entry_" + m_intCurrentIndex).setHidden();
+						if (updatedIndex == m_intCurrentIndex){
+							$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+							m_intCurrentIndex = -1;
+						}else{
+							$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+							$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
+							m_intCurrentIndex = updatedIndex;
 						}
 					}
-				}
-				$("entry_" + m_intCurrentIndex).setHidden();
-				if (updatedIndex == m_intCurrentIndex){
-					$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-					m_intCurrentIndex = -1;
-				}else{
-					$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-					$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
-					m_intCurrentIndex = updatedIndex;
 				}
 			}
 		}
