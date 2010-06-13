@@ -59,6 +59,37 @@ function FlashCards()
 		$("section_info").innerHTML = m_remaining_entries_cnt + "/" + m_entries_cnt + " card(s) left<br>";
 	}
 	
+	var openCloseItem = function(elm)
+	{
+		if (elm.currentState == STATE_CLOSED){
+			$("text2_" + elm.entryIndex).style.display = "block";
+			elm.currentState = STATE_OPEN;
+		}else if (elm.currentState == STATE_OPEN){
+			$("text2_" + elm.entryIndex).style.display = "none";
+			elm.currentState = STATE_CLOSED;
+		}
+		var diff = elm.offsetTop + elm.offsetHeight - document.body.scrollTop - window.innerHeight;
+		if (diff > 0){
+			window.scrollBy(0, diff);
+		}
+	}
+	
+	var hideItem = function(elm)
+	{
+		elm.style.display = "none";
+		elm.currentState = STATE_HIDDEN;
+		m_remaining_entries_cnt--;
+		updateCount();
+	}
+	
+	var moveFocus = function(oldIndex, newIndex)
+	{
+		if (oldIndex != newIndex && oldIndex != -1){
+			$("entry_" + oldIndex).style.backgroundColor = COLOR_UNFOCUSED;
+		}
+		$("entry_" + newIndex).style.backgroundColor = COLOR_FOCUSED;
+	}
+	
 	this.startFlashCard = function(entries)
 	{
 		_log("startFlashCard()");
@@ -76,28 +107,6 @@ function FlashCards()
 			elm.className = "class_entry";
 			elm.entryIndex = i;
 			elm.currentState = STATE_CLOSED;
-			elm.toggleOpenClose = function()
-			{
-				if (this.currentState == STATE_CLOSED){
-					$("text2_" + this.entryIndex).style.display = "block";
-					this.currentState = STATE_OPEN;
-				}else if (this.currentState == STATE_OPEN){
-					$("text2_" + this.entryIndex).style.display = "none";
-					this.currentState = STATE_CLOSED;
-				}
-				var diff = this.offsetTop + this.offsetHeight - document.body.scrollTop - window.innerHeight;
-				if (diff > 0){
-					window.scrollBy(0, diff);
-				}
-			}
-
-			elm.setHidden = function()
-			{
-				this.style.display = "none";
-				this.currentState = STATE_HIDDEN;
-				m_remaining_entries_cnt--;
-				updateCount();
-			}
 
 			var elmIndex = document.createElement("div");
 			elmIndex.id = elm.id + "_index";
@@ -113,12 +122,8 @@ function FlashCards()
 			
 			elmText1.onclick = function ()
 			{
-				$("entry_" + this.entryIndex).toggleOpenClose();
-
-				if (m_intCurrentIndex != this.entryIndex && m_intCurrentIndex != -1){
-					$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-				}
-				$("entry_" + this.entryIndex).style.backgroundColor = COLOR_FOCUSED;
+				openCloseItem($("entry_" + this.entryIndex));
+				moveFocus(m_intCurrentIndex, this.entryIndex);
 				m_intCurrentIndex = this.entryIndex;
 			}
 
@@ -131,7 +136,7 @@ function FlashCards()
 
 			elmText2.onclick = function ()
 			{
-				$("entry_" + this.entryIndex).setHidden();
+				hideItem($("entry_" + this.entryIndex));
 			}
 
 			elm.appendChild(elmIndex);
@@ -214,33 +219,24 @@ function FlashCards()
 			m_intCurrentIndex = updatedIndex;
 		}else{
 			if(m_intCurrentIndex != -1){
-				if(e.keyCode == 39){	// right
-					if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
-						$("entry_" + m_intCurrentIndex).toggleOpenClose();
+				if(($("entry_" + m_intCurrentIndex).currentState != STATE_OPEN && (e.keyCode == 39 || e.charCode == 63557 || e.keyCode == 13))
+				 ||($("entry_" + m_intCurrentIndex).currentState != STATE_CLOSED && e.keyCode == 37)){	// right / left
+					openCloseItem($("entry_" + m_intCurrentIndex));
+				}else if($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN && (e.charCode == 63557 || e.keyCode == 13)){		// center/enter key
+					// find the next index
+					var updatedIndex = m_intCurrentIndex;
+					updatedIndex = getNextIndex();
+					if (updatedIndex == m_intCurrentIndex){
+						updatedIndex = getPreviousIndex();
 					}
-				}else if(e.keyCode == 37){	// left
-					if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
-						$("entry_" + m_intCurrentIndex).toggleOpenClose();
-					}
-				}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
-					if ($("entry_" + m_intCurrentIndex).currentState == STATE_CLOSED){
-						$("entry_" + m_intCurrentIndex).toggleOpenClose();
-					}else if ($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN){
-						// find the next index
-						var updatedIndex = m_intCurrentIndex;
-						updatedIndex = getNextIndex();
-						if (updatedIndex == m_intCurrentIndex){
-							updatedIndex = getPreviousIndex();
-						}
-						$("entry_" + m_intCurrentIndex).setHidden();
-						if (updatedIndex == m_intCurrentIndex){
-							$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-							m_intCurrentIndex = -1;
-						}else{
-							$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-							$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
-							m_intCurrentIndex = updatedIndex;
-						}
+					hideItem($("entry_" + m_intCurrentIndex));
+					if (updatedIndex == m_intCurrentIndex){
+						$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+						m_intCurrentIndex = -1;
+					}else{
+						$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+						$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
+						m_intCurrentIndex = updatedIndex;
 					}
 				}
 			}
