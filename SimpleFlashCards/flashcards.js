@@ -114,6 +114,12 @@ function FlashCards()
 			elmText1.onclick = function ()
 			{
 				$("entry_" + this.entryIndex).toggleOpenClose();
+
+				if (m_intCurrentIndex != this.entryIndex && m_intCurrentIndex != -1){
+					$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
+				}
+				$("entry_" + this.entryIndex).style.backgroundColor = COLOR_FOCUSED;
+				m_intCurrentIndex = this.entryIndex;
 			}
 
 			var elmText2 = document.createElement("div");
