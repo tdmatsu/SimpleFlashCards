@@ -3,101 +3,84 @@ Attribute VB_Name = "modMain"
 ' Save this module to
 ' C:\Documents and Settings\<user>\Application Data\Microsoft\Excel\XLSTART\Personal.xls
 '
-
 Option Explicit
 
-'
-' Create FlashCards as single HTML file
-'
-Sub CreateSingleHtml()
+Private Const SEVENZIP_PATH     As String = "C:\Program Files\7-Zip\7z.exe"
+Private Const WIDGET_PATH       As String = "L:\created\doc\FlashCards"
+Private Const WIDGET_FOLDER     As String = "SimpleFlashCards"
+Private Const WIDGET_FILENAME   As String = "SimpleFlashCards.wgz"
 
-Dim fso         As Object
-Dim strFileName As String
+'
+' This function requires the following files
+' (WIDGET_FOLDER)\createwgz.bat      // batch file for creating wgz file
+' (WIDGET_FOLDER)\SimpleFlashCards   // content of the widget
+'
+' Also 7-zip needs to be installed under SEVENZIP_PATH (see above)
+'
+Sub CreateFlashCardsWidget()
     
-    Do
-        strFileName = Application.GetSaveAsFilename("flashcards.html", "HTML File (*.html),*.html", , "Save file as...")
-        If CStr(strFileName) <> "False" Then
-            Dim strDir      As String
-            strDir = Dir(strFileName)
-            If strDir <> "" Then
-                If MsgBox("Overwrite existing file?", vbOKCancel + vbQuestion) = vbCancel Then
-                    Exit Sub    ' cancel
+    If Dir(SEVENZIP_PATH) = "" Then
+        Call MsgBox("7-zip is not installed!")
+    End If
+    
+    If Dir(WIDGET_PATH, vbDirectory) <> "" Then
+        
+        ' get the output file path
+        Dim strWgzFileName      As String
+        Do
+            strWgzFileName = Application.GetSaveAsFilename("SimpleFlashCards.wgz", "S60 WRT Widget (*.wgz),*.wgz", , "Save file as...")
+            If CStr(strWgzFileName) <> "False" Then
+                Dim strDir      As String
+                strDir = Dir(strWgzFileName)
+                If strDir <> "" Then    ' same file name already exists
+                    If MsgBox("Overwrite existing file?", vbOKCancel + vbQuestion) = vbCancel Then
+                        Exit Sub    ' user doesn't want to overwrite -> cancel
+                    Else
+                        Exit Do     ' ok to overwrite -> proceed
+                    End If
                 Else
-                    Exit Do     ' proceed
+                    Exit Do      ' no need to overwrite -> proceed
                 End If
             Else
-                Exit Do      ' proceed
+                Exit Sub    ' canceled
             End If
-        Else
-            Exit Sub    ' cancel
-        End If
-    Loop
-
-Dim shtHtml As Worksheet
-Dim strHtml As String
-
-    Set shtHtml = ThisWorkbook.Sheets("html")
-    
-    Debug.Print shtHtml.Name
-    strHtml = shtHtml.Range("A1").Value + MakeExportData + shtHtml.Range("A2").Value
-
-    ' open the output stream
-    Set fso = CreateObject("ADODB.Stream")
-    fso.Type = 2
-    fso.Charset = "utf-8"
-    Call fso.Open
-
-    ' write the data
-    Call fso.writeText(strHtml)
-
-    ' save the file and close
-    Call fso.saveToFile(strFileName, 2)
-    Call fso.Close
-
-    Call MsgBox("Completed!!", vbInformation)
-
-
-End Sub
-
-
-
-Sub CreateDataJs()
-Dim fso         As Object
-Dim strFileName As String
-
-    Do
-        strFileName = Application.GetSaveAsFilename("data.js", , , "Save file as...")
-        If CStr(strFileName) <> "False" Then
-            Dim strDir      As String
-            strDir = Dir(strFileName)
-            If strDir <> "" Then
-                If MsgBox("Overwrite existing file?", vbOKCancel + vbQuestion) = vbCancel Then
-                    Exit Sub    ' cancel
-                Else
-                    Exit Do     ' proceed
-                End If
-            Else
-                Exit Do      ' proceed
-            End If
-        Else
-            Exit Sub    ' cancel
-        End If
-    Loop
-    
-    ' open the output stream
-    Set fso = CreateObject("ADODB.Stream")
-    fso.Type = 2
-    fso.Charset = "utf-8"
-    Call fso.Open
-    
-    ' write the data
-    Call fso.writeText(MakeExportData)
-    
-    ' save the file and close
-    Call fso.saveToFile(strFileName, 2)
-    Call fso.Close
-    
-    Call MsgBox("Completed!!", vbInformation)
+        Loop
+        
+        Dim strFileName As String
+        strFileName = WIDGET_PATH + "\" + WIDGET_FOLDER + "\data.js"
+        
+        Dim fso         As Object
+        ' open the output stream
+        Set fso = CreateObject("ADODB.Stream")
+        fso.Type = 2
+        fso.Charset = "utf-8"
+        Call fso.Open
+        
+        ' write the data
+        Call fso.writeText(MakeExportData)
+        
+        ' save the file and close
+        Call fso.saveToFile(strFileName, 2)
+        Call fso.Close
+        
+        ' run the batch file to create .wgz file
+        Dim strCurDir   As String
+        strCurDir = CurDir
+        Call ChDrive("L:")
+        Call ChDir(WIDGET_PATH)
+        Call Shell("CMD.EXE /C " + WIDGET_PATH + "\createwgz.bat", vbHide)
+        Call ChDrive(Left(strCurDir, 2))
+        Call ChDir(strCurDir)
+                
+        ' wait for a while for the shell command to be completed
+        Dim waitTime As Variant
+        waitTime = Now + TimeValue("0:00:02")
+        Call Application.Wait(waitTime)
+        
+        ' copy the file
+        Call FileCopy(WIDGET_PATH + "\" + WIDGET_FILENAME, strWgzFileName)
+        
+    End If
 
 End Sub
 
@@ -143,3 +126,4 @@ Dim index           As Integer
     MakeExportData = strRet
     
 End Function
+
