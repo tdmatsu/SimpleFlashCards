@@ -48,12 +48,6 @@ function FlashCards()
 		m_exitFunction = exitFunction;
 	}
 	
-	this.setEntries = function(entries){
-		m_entries = entries;
-		m_entries_cnt = entries.length;
-		m_remaining_entries_cnt = entries.length;
-	}
-	
 	var updateCount = function()
 	{
 		$("section_info").innerHTML = m_remaining_entries_cnt + "/" + m_entries_cnt + " card(s) left<br>";
