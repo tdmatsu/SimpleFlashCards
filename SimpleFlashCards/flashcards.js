@@ -11,7 +11,7 @@ function FlashCards()
 	var m_entries_cnt = 0;
 	var m_remaining_entries_cnt = 0;
 	var m_region;
-	var m_intCurrentIndex = -1;
+	var m_intCurrentIndex;
 	var m_exitFunction;
 
 	// states
@@ -78,10 +78,18 @@ function FlashCards()
 	
 	var moveFocus = function(oldIndex, newIndex)
 	{
-		if (oldIndex != newIndex && oldIndex != -1){
-			$("entry_" + oldIndex).style.backgroundColor = COLOR_UNFOCUSED;
+		if (oldIndex != newIndex){
+			if(oldIndex != -1){
+				$("entry_" + oldIndex).style.backgroundColor = COLOR_UNFOCUSED;
+			}else{
+				$("section_return").style.borderColor = COLOR_UNFOCUSED;
+			}
 		}
-		$("entry_" + newIndex).style.backgroundColor = COLOR_FOCUSED;
+		if(newIndex != -1){
+			$("entry_" + newIndex).style.backgroundColor = COLOR_FOCUSED;
+		}else{
+			$("section_return").style.borderColor = COLOR_FOCUSED;
+		}
 	}
 	
 	this.startFlashCard = function(entries)
@@ -140,7 +148,7 @@ function FlashCards()
 		}
 		
 		m_intCurrentIndex = 0;
-		moveFocus(m_intCurrentIndex, m_intCurrentIndex);
+		moveFocus(-1, m_intCurrentIndex);
 		
 		updateCount();
 	}
@@ -151,7 +159,7 @@ function FlashCards()
 		while(1){
 			startIndex--;
 			if (startIndex < 0){
-				startIndex = m_intCurrentIndex;
+				startIndex = -1;
 				break;
 			}else if ($("entry_" + startIndex).currentState != STATE_HIDDEN){
 				break;
@@ -162,7 +170,12 @@ function FlashCards()
 	
 	var getNextIndex = function()
 	{
-		var startIndex = m_intCurrentIndex;
+		var startIndex;
+//		if(m_intCurrentIndex == -1){
+//			startIndex = 0;
+//		}else{
+			startIndex = m_intCurrentIndex;
+//		}
 		while(1){
 			startIndex++;
 			if (startIndex >= $("section_cards").childNodes.length){
@@ -182,33 +195,29 @@ function FlashCards()
 			return;
 		}else if (e.keyCode == 38 || e.keyCode ==40){	// up / down
 			var updatedIndex;
-			if (m_intCurrentIndex == -1){
-				m_intCurrentIndex = 0;
-				updatedIndex = 0;
-			}else{
-				if (e.keyCode == 38){	// up
-					updatedIndex = getPreviousIndex();
-				}else if (e.keyCode == 40){	// down
-					updatedIndex = getNextIndex();
-				}
+			if (e.keyCode == 38){	// up
+				updatedIndex = getPreviousIndex();
+			}else if (e.keyCode == 40){	// down
+				updatedIndex = getNextIndex();
 			}
 			
 			// update cursor
-			if (m_intCurrentIndex != updatedIndex){
-				$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-			}
-			$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
+			moveFocus(m_intCurrentIndex, updatedIndex);
 			
 			// scroll
-			var offset = $("entry_" + updatedIndex).offsetTop;
-			if (e.keyCode == 38) {
-				if (m_intCurrentIndex == 0 && updatedIndex == 0){
-					window.scroll(0, 0);
-				}else if(offset < (window.pageYOffset +(window.innerHeight * 0.2))){
-					window.scroll(0, offset - (window.innerHeight * 0.2));
+			if (updatedIndex != -1){
+				var offset = $("entry_" + updatedIndex).offsetTop;
+				if (e.keyCode == 38) {
+					if (m_intCurrentIndex == 0 && updatedIndex == 0){
+						window.scroll(0, 0);
+					}else if(offset < (window.pageYOffset +(window.innerHeight * 0.2))){
+						window.scroll(0, offset - (window.innerHeight * 0.2));
+					}
+				}else if (e.keyCode == 40 && offset > (window.pageYOffset + (window.innerHeight * 0.7))){
+					window.scroll(0, offset - (window.innerHeight * 0.7));
 				}
-			}else if (e.keyCode == 40 && offset > (window.pageYOffset + (window.innerHeight * 0.7))){
-				window.scroll(0, offset - (window.innerHeight * 0.7));
+			}else{
+				window.scroll(0, 0);
 			}
 			
 			// update index
@@ -226,15 +235,11 @@ function FlashCards()
 						updatedIndex = getPreviousIndex();
 					}
 					hideItem($("entry_" + m_intCurrentIndex));
-					if (updatedIndex == m_intCurrentIndex){
-						$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-						m_intCurrentIndex = -1;
-					}else{
-						$("entry_" + m_intCurrentIndex).style.backgroundColor = COLOR_UNFOCUSED;
-						$("entry_" + updatedIndex).style.backgroundColor = COLOR_FOCUSED;
-						m_intCurrentIndex = updatedIndex;
-					}
+					moveFocus(m_intCurrentIndex, updatedIndex);
+					m_intCurrentIndex = updatedIndex;
 				}
+			}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
+				m_exitFunction();
 			}
 		}
 	}
