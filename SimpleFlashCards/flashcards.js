@@ -91,7 +91,6 @@ function FlashCards()
 		m_entries = entries;
 		m_entries_cnt = entries.length;
 		m_remaining_entries_cnt = entries.length;
-		m_intCurrentIndex = -1;
 		
 		$("section_cards").innerHTML = "";
 		
@@ -139,6 +138,9 @@ function FlashCards()
 			
 			$("section_cards").appendChild(elm);
 		}
+		
+		m_intCurrentIndex = 0;
+		moveFocus(m_intCurrentIndex, m_intCurrentIndex);
 		
 		updateCount();
 	}
