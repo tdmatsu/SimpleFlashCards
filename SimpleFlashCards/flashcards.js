@@ -171,11 +171,7 @@ function FlashCards()
 	var getNextIndex = function()
 	{
 		var startIndex;
-//		if(m_intCurrentIndex == -1){
-//			startIndex = 0;
-//		}else{
-			startIndex = m_intCurrentIndex;
-//		}
+		startIndex = m_intCurrentIndex;
 		while(1){
 			startIndex++;
 			if (startIndex >= $("section_cards").childNodes.length){
