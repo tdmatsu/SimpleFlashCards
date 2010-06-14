@@ -53,7 +53,7 @@ function init()
 
 		var elmCollectionItemCount = document.createElement("div");
 		elmCollectionItemCount.className = "collection_itemcount";
-		elmCollectionItemCount.innerHTML = FlashCardCollection[i].length + " entries";
+		elmCollectionItemCount.innerHTML = FlashCardCollection[i].length + " cards";
 
 		elm.appendChild(elmCollectionName);
 		elm.appendChild(elmCollectionItemCount);
