@@ -66,12 +66,27 @@ function FlashCards()
 		}
 	}
 	
-	var hideItem = function(elm)
+	var hideItem = function(index)
 	{
-		elm.style.display = "none";
-		elm.currentState = STATE_HIDDEN;
+		// index: index of the item to be hidden
+		// get the next index
+		var updatedIndex = index;
+		updatedIndex = getNextIndex(index);
+		if (updatedIndex == index){
+			updatedIndex = getPreviousIndex(index);
+		}
+		
+		// hide the item
+		$("entry_" + index).style.display = "none";
+		$("entry_" + index).currentState = STATE_HIDDEN;
+		
+		// update the counter
 		m_remaining_entries_cnt--;
 		updateCount();
+		
+		// move the focus and update the current index
+		moveFocus(m_intCurrentIndex, updatedIndex);
+		m_intCurrentIndex = updatedIndex;
 	}
 	
 	var moveFocus = function(oldIndex, newIndex)
@@ -156,7 +171,7 @@ function FlashCards()
 
 			elmText2.onclick = function ()
 			{
-				hideItem($("entry_" + this.entryIndex));
+				hideItem(this.entryIndex);
 			}
 
 			elm.appendChild(elmIndex);
@@ -172,7 +187,7 @@ function FlashCards()
 		updateCount();
 	}
 	
-	var getPreviousIndex = function()
+	var getPreviousIndex = function(currentIndex)
 	{
 		var startIndex = m_intCurrentIndex;
 		while(1){
@@ -187,14 +202,14 @@ function FlashCards()
 		return startIndex;
 	}
 	
-	var getNextIndex = function()
+	var getNextIndex = function(currentIndex)
 	{
 		var startIndex;
-		startIndex = m_intCurrentIndex;
+		startIndex = currentIndex;
 		while(1){
 			startIndex++;
 			if (startIndex >= $("section_cards").childNodes.length){
-				startIndex = m_intCurrentIndex;
+				startIndex = currentIndex;
 				break;
 			}else if ($("entry_" + startIndex).currentState != STATE_HIDDEN){
 				break;
@@ -211,9 +226,9 @@ function FlashCards()
 		}else if (e.keyCode == 38 || e.keyCode ==40){	// up / down
 			var updatedIndex;
 			if (e.keyCode == 38){	// up
-				updatedIndex = getPreviousIndex();
+				updatedIndex = getPreviousIndex(m_intCurrentIndex);
 			}else if (e.keyCode == 40){	// down
-				updatedIndex = getNextIndex();
+				updatedIndex = getNextIndex(m_intCurrentIndex);
 			}
 			
 			// update cursor
@@ -243,15 +258,7 @@ function FlashCards()
 				 ||($("entry_" + m_intCurrentIndex).currentState != STATE_CLOSED && e.keyCode == 37)){	// right / left
 					openCloseItem($("entry_" + m_intCurrentIndex));
 				}else if($("entry_" + m_intCurrentIndex).currentState == STATE_OPEN && (e.charCode == 63557 || e.keyCode == 13)){		// center/enter key
-					// find the next index
-					var updatedIndex = m_intCurrentIndex;
-					updatedIndex = getNextIndex();
-					if (updatedIndex == m_intCurrentIndex){
-						updatedIndex = getPreviousIndex();
-					}
-					hideItem($("entry_" + m_intCurrentIndex));
-					moveFocus(m_intCurrentIndex, updatedIndex);
-					m_intCurrentIndex = updatedIndex;
+					hideItem(m_intCurrentIndex);
 				}
 			}else if(e.charCode == 63557 || e.keyCode == 13){		// center/enter key
 				m_exitFunction();
