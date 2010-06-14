@@ -69,10 +69,10 @@ function init()
 	elmShuffle.setShuffle = function(flag){
 		if (flag){
 			this.innerHTML = "Shuffle ON";
-			this.style.backgroundColor="#66FF66";
+			this.style.backgroundColor="#CCFFCC";
 		}else{
 			this.innerHTML = "Shuffle OFF";
-			this.style.backgroundColor="#CCCCCC";
+			this.style.backgroundColor="#FFCCCC";
 		}
 		this.shuffleOn = flag;
 	}
