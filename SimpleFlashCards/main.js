@@ -1,6 +1,7 @@
 function $(e){return document.getElementById(e);}
 
 var flashCards = new FlashCards();     // the flash card data
+var intCurrentMenuIndex = -1;
 var DEBUG = false;  // Debug flag
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -59,6 +60,11 @@ function init()
 		
 		$("section_startpage").appendChild(elm);
 	}
+	
+	if (FlashCardCollectionNames.length > 0){
+		intCurrentMenuIndex = 0;
+		moveFocus(intCurrentMenuIndex, intCurrentMenuIndex);
+	}
 
 	flashCards.initialize($("section_flashcards"), gotoStartPage);
 	
@@ -86,7 +92,13 @@ function gotoStartPage()
 	$("section_flashcards").style.display = "none";
 }
 
-var intCurrentMenuIndex = -1;
+function moveFocus(oldIndex, newIndex)
+{
+	if (oldIndex != newIndex && oldIndex != -1){
+		$("section_startpage").childNodes.item(oldIndex).style.borderColor = "#BBBBBB";
+	}
+	$("section_startpage").childNodes.item(newIndex).style.borderColor = "#FF6666";
+}
 
 document.onkeydown = function(e)
 {
@@ -124,11 +136,8 @@ function keyDown_startPage(e)
 				}
 			}
 		}
-
-		if (intCurrentMenuIndex != updatedIndex){
-			$("section_startpage").childNodes.item(intCurrentMenuIndex).style.borderColor = "#BBBBBB";
-		}
-		$("section_startpage").childNodes.item(updatedIndex).style.borderColor = "#FF6666";
+		
+		moveFocus(intCurrentMenuIndex, updatedIndex);
 
 		intCurrentMenuIndex = updatedIndex;
 	}else if(e.charCode == 63557 || e.keyCode == 13){
