@@ -6,7 +6,7 @@ Attribute VB_Name = "modMain"
 Option Explicit
 
 Private Const SEVENZIP_PATH     As String = "C:\Program Files\7-Zip\7z.exe"
-Private Const WIDGET_PATH       As String = "L:\created\doc\FlashCards"
+Private Const WIDGET_PATH       As String = "C:\Qt\MyProjects\SimpleFlashCards"
 Private Const WIDGET_FOLDER     As String = "SimpleFlashCards"
 Private Const WIDGET_FILENAME   As String = "SimpleFlashCards.wgz"
 
