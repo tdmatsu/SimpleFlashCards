@@ -115,12 +115,23 @@ function gotoStartPage()
 	$("section_flashcards").style.display = "none";
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// moveFocus
+//----------------------------------------------------------------------------------------------------------------------
 function moveFocus(oldIndex, newIndex)
 {
-	if (oldIndex != newIndex && oldIndex != -1){
-		$("collection_entries").childNodes.item(oldIndex).style.borderColor = "#BBBBBB";
+	if (oldIndex != newIndex){
+		if (oldIndex == -1){
+			$("shuffle_button").style.borderColor = "#BBBBBB";
+		}else{
+			$("collection_entries").childNodes.item(oldIndex).style.borderColor = "#BBBBBB";
+		}
 	}
-	$("collection_entries").childNodes.item(newIndex).style.borderColor = "#FF6666";
+	if (newIndex == -1){
+		$("shuffle_button").style.borderColor = "#FF6666";
+	}else{
+		$("collection_entries").childNodes.item(newIndex).style.borderColor = "#FF6666";
+	}
 }
 
 document.onkeydown = function(e)
@@ -143,20 +154,15 @@ function keyDown_startPage(e)
 {
 	var updatedIndex = intCurrentMenuIndex;
 	if (e.keyCode == 38 || e.keyCode == 40){
-		if (updatedIndex == -1){
-			intCurrentMenuIndex = 0;
-			updatedIndex = 0;
-		}else{
-			if (e.keyCode == 38){	// up
-				updatedIndex--;
-				if (updatedIndex < 0){
-					updatedIndex = 0;
-				}
-			}else if (e.keyCode == 40){	// down
-				updatedIndex++;
-				if (updatedIndex >= $("collection_entries").childNodes.length){
-					updatedIndex = $("collection_entries").childNodes.length - 1;
-				}
+		if (e.keyCode == 38){	// up
+			updatedIndex--;
+			if (updatedIndex < -1){
+				updatedIndex = -1;
+			}
+		}else if (e.keyCode == 40){	// down
+			updatedIndex++;
+			if (updatedIndex >= $("collection_entries").childNodes.length){
+				updatedIndex = $("collection_entries").childNodes.length - 1;
 			}
 		}
 		
@@ -166,6 +172,8 @@ function keyDown_startPage(e)
 	}else if(e.charCode == 63557 || e.keyCode == 13){
 		if (intCurrentMenuIndex != -1){
 			startFlashCards(intCurrentMenuIndex);
+		}else{
+			$("shuffle_button").setShuffle(!$("shuffle_button").shuffleOn);
 		}
 	}
 }
