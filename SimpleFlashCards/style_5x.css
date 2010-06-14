@@ -3,6 +3,7 @@ body              { color: #000000; }
 div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 10px; cursor: pointer; }
 div.collection_name      { font-size:20pt; color: #6699CC; }
 div.collection_itemcount { font-size:14pt; }
+#shuffle_button          { font-size:14pt; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 5px; margin: 10px; cursor: pointer; }
 
 #section_info     { font-size:12pt; float:right; margin: 10px; }
 #section_return   { font-size:12pt; float:left; background-color: #FFFFEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 5px; margin: 10px; cursor: pointer; }

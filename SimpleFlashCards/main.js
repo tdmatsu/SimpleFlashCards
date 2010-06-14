@@ -64,6 +64,24 @@ function init()
 		elmEntries.appendChild(elm);
 	}
 	
+	var elmShuffle = document.createElement("span");
+	elmShuffle.id = "shuffle_button";
+	elmShuffle.setShuffle = function(flag){
+		if (flag){
+			this.innerHTML = "Shuffle ON";
+			this.style.backgroundColor="#66FF66";
+		}else{
+			this.innerHTML = "Shuffle OFF";
+			this.style.backgroundColor="#CCCCCC";
+		}
+		this.shuffleOn = flag;
+	}
+	elmShuffle.onclick = function(){
+		this.setShuffle(!this.shuffleOn);
+	}
+	elmShuffle.setShuffle(true);
+	
+	$("section_startpage").appendChild(elmShuffle);
 	$("section_startpage").appendChild(elmEntries);
 	
 	if (FlashCardCollectionNames.length > 0){
@@ -82,7 +100,7 @@ function init()
 //----------------------------------------------------------------------------------------------------------------------
 function startFlashCards(index)
 {
-	flashCards.startFlashCard(FlashCardCollection[index], true);
+	flashCards.startFlashCard(FlashCardCollection[index], $("shuffle_button").shuffleOn);
 	
 	$("section_startpage").style.display = "none";
 	$("section_flashcards").style.display = "block";
