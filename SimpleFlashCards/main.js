@@ -39,6 +39,9 @@ function init()
 	}
 
 	// initialize the start page
+	var elmEntries = document.createElement("div");
+	elmEntries.id="collection_entries";
+
 	for (var i = 0; i < FlashCardCollectionNames.length; i++){
 		var elm = document.createElement("div");
 		elm.className = "collection_entry";
@@ -58,8 +61,10 @@ function init()
 		elm.appendChild(elmCollectionName);
 		elm.appendChild(elmCollectionItemCount);
 		
-		$("section_startpage").appendChild(elm);
+		elmEntries.appendChild(elm);
 	}
+	
+	$("section_startpage").appendChild(elmEntries);
 	
 	if (FlashCardCollectionNames.length > 0){
 		intCurrentMenuIndex = 0;
@@ -77,7 +82,7 @@ function init()
 //----------------------------------------------------------------------------------------------------------------------
 function startFlashCards(index)
 {
-	flashCards.startFlashCard(FlashCardCollection[index]);
+	flashCards.startFlashCard(FlashCardCollection[index], true);
 	
 	$("section_startpage").style.display = "none";
 	$("section_flashcards").style.display = "block";
@@ -95,9 +100,9 @@ function gotoStartPage()
 function moveFocus(oldIndex, newIndex)
 {
 	if (oldIndex != newIndex && oldIndex != -1){
-		$("section_startpage").childNodes.item(oldIndex).style.borderColor = "#BBBBBB";
+		$("collection_entries").childNodes.item(oldIndex).style.borderColor = "#BBBBBB";
 	}
-	$("section_startpage").childNodes.item(newIndex).style.borderColor = "#FF6666";
+	$("collection_entries").childNodes.item(newIndex).style.borderColor = "#FF6666";
 }
 
 document.onkeydown = function(e)
@@ -131,8 +136,8 @@ function keyDown_startPage(e)
 				}
 			}else if (e.keyCode == 40){	// down
 				updatedIndex++;
-				if (updatedIndex >= $("section_startpage").childNodes.length){
-					updatedIndex = $("section_startpage").childNodes.length - 1;
+				if (updatedIndex >= $("collection_entries").childNodes.length){
+					updatedIndex = $("collection_entries").childNodes.length - 1;
 				}
 			}
 		}

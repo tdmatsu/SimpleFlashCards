@@ -24,8 +24,6 @@ function FlashCards()
 	var COLOR_UNFOCUSED = "#BBBBBB";
 
 	this.initialize = function(region, exitFunction){
-		
-		
 		m_region = region;
 		
 		var elmInfo = document.createElement("div");
@@ -92,11 +90,32 @@ function FlashCards()
 		}
 	}
 	
-	this.startFlashCard = function(entries)
+	this.startFlashCard = function(entries, shuffle)
 	{
 		_log("startFlashCard()");
+		
+		// copy the entries
+		m_entries = null;
+		m_entries = new Array();
 
-		m_entries = entries;
+		if(shuffle == true){
+			var tmpArray = new Array();
+			for (var i = 0; i < entries.length; i++){
+				tmpArray[i] = entries[i];
+			}
+			var i = 0;
+			while(tmpArray.length){
+				var index = Math.floor(Math.random()*tmpArray.length);
+				m_entries[i] = tmpArray[index];
+				tmpArray.splice(index, 1);
+				i++;
+			}
+		}else{
+			for (var i = 0; i < entries.length; i++){
+				m_entries[i] = entries[i];
+			}
+		}
+		
 		m_entries_cnt = entries.length;
 		m_remaining_entries_cnt = entries.length;
 		
