@@ -66,7 +66,7 @@ Sub CreateFlashCardsWidget()
         ' run the batch file to create .wgz file
         Dim strCurDir   As String
         strCurDir = CurDir
-        Call ChDrive("L:")
+        Call ChDrive(Left(WIDGET_PATH, 2))
         Call ChDir(WIDGET_PATH)
         Call Shell("CMD.EXE /C " + WIDGET_PATH + "\createwgz.bat", vbHide)
         Call ChDrive(Left(strCurDir, 2))
