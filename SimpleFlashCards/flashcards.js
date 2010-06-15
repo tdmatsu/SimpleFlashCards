@@ -60,7 +60,7 @@ function FlashCards()
 			$("text2_" + elm.entryIndex).style.display = "none";
 			elm.currentState = STATE_CLOSED;
 		}
-		var diff = elm.offsetTop + elm.offsetHeight - document.body.scrollTop - window.innerHeight;
+		var diff = elm.offsetTop + elm.offsetHeight - window.pageYOffset - window.innerHeight + 5;
 		if (diff > 0){
 			window.scrollBy(0, diff);
 		}
