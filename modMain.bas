@@ -74,7 +74,7 @@ Sub CreateFlashCardsWidget()
                 
         ' wait for a while for the shell command to be completed
         Dim waitTime As Variant
-        waitTime = Now + TimeValue("0:00:02")
+        waitTime = Now + TimeValue("0:00:04")
         Call Application.Wait(waitTime)
         
         ' copy the file
@@ -113,6 +113,9 @@ Dim index           As Integer
                 Dim strWrk      As String
                 strWrk = sht.Range("A" + CStr(r)).Value + "\t" + sht.Range("B" + CStr(r)).Value
                 strWrk = Replace(strWrk, Chr(34), "\" + Chr(34))
+                strWrk = Replace(strWrk, vbCrLf, "<br>")
+                strWrk = Replace(strWrk, vbCr, "<br>")
+                strWrk = Replace(strWrk, vbLf, "<br>")
                 strRet = strRet + IIf(r = 1, "", ",") + Chr(34) + strWrk + Chr(34) + vbCrLf
                 r = r + 1
             Loop
