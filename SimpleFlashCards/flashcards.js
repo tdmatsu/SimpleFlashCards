@@ -144,15 +144,16 @@ function FlashCards()
 			elm.currentState = STATE_CLOSED;
 
 			var elmIndex = document.createElement("div");
-			elmIndex.id = elm.id + "_index";
-			elmIndex.innerHTML = i;
-			elmIndex.style.display = "none";
+//			elmIndex.id = elm.id + "_index";		// not used
+			elmIndex.className = "entry_number";
+			elmIndex.innerHTML = "#" + (i+1);
+//			elmIndex.style.display = "block";		// "block" by default
 
 			var elmText1 = document.createElement("div");
 			elmText1.className = "entry_text1";
-			elmText1.id = "text1_" + i;
+//			elmText1.id = "text1_" + i;		// not used
 			elmText1.innerHTML = m_entries[i].split("\t")[0];
-			elmText1.style.display = "block";
+//			elmText1.style.display = "block";		// "block" by default
 			elmText1.entryIndex = i;
 			
 			elmText1.onclick = function ()
