@@ -84,6 +84,20 @@ Sub CreateFlashCardsWidget()
 
 End Sub
 
+Private Function formatEntry(str As String) As String
+Dim ret     As String
+
+    ret = str
+    ret = Replace(ret, Chr(34), "\" + Chr(34))      ' escape couble quote
+    ret = Replace(ret, vbCrLf, "<br>")              ' replace CRLF
+    ret = Replace(ret, vbCr, "<br>")                ' replace CR
+    ret = Replace(ret, vbLf, "<br>")                ' replace LF
+    ret = Chr(34) + ret + Chr(34)                   ' add double quotes
+    
+    formatEntry = ret
+
+End Function
+
 Private Function MakeExportData() As String
 Dim strRet          As String
 Dim intSheetsCount  As Integer
@@ -110,13 +124,11 @@ Dim index           As Integer
                 If sht.Range("A" + CStr(r)).Value = "" Then
                     Exit Do
                 End If
-                Dim strWrk      As String
-                strWrk = sht.Range("A" + CStr(r)).Value + "\t" + sht.Range("B" + CStr(r)).Value
-                strWrk = Replace(strWrk, Chr(34), "\" + Chr(34))
-                strWrk = Replace(strWrk, vbCrLf, "<br>")
-                strWrk = Replace(strWrk, vbCr, "<br>")
-                strWrk = Replace(strWrk, vbLf, "<br>")
-                strRet = strRet + IIf(r = 1, "", ",") + Chr(34) + strWrk + Chr(34) + vbCrLf
+                strRet = strRet + _
+                    IIf(r = 1, "", ",") + "[" + _
+                    formatEntry(sht.Range("A" + CStr(r)).Value) + "," + _
+                    formatEntry(sht.Range("B" + CStr(r)).Value) + "," + _
+                    formatEntry(sht.Range("C" + CStr(r)).Value) + "]" + vbCrLf
                 r = r + 1
             Loop
             strRet = strRet + "];" + vbCrLf + vbCrLf

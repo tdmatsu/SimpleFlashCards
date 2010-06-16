@@ -152,7 +152,7 @@ function FlashCards()
 			var elmText1 = document.createElement("div");
 			elmText1.className = "entry_text1";
 //			elmText1.id = "text1_" + i;		// not used
-			elmText1.innerHTML = m_entries[i].split("\t")[0];
+			elmText1.innerHTML = m_entries[i][0];
 //			elmText1.style.display = "block";		// "block" by default
 			elmText1.entryIndex = i;
 			
@@ -166,7 +166,7 @@ function FlashCards()
 			var elmText2 = document.createElement("div");
 			elmText2.className = "entry_text2";
 			elmText2.id = "text2_" + i;
-			elmText2.innerHTML = m_entries[i].split("\t")[1];
+			elmText2.innerHTML = m_entries[i][1];
 			elmText2.style.display = "none";
 			elmText2.entryIndex = i;
 
