@@ -55,9 +55,13 @@ function FlashCards()
 	{
 		if (elm.currentState == STATE_CLOSED){
 			$("text2_" + elm.entryIndex).style.display = "block";
+			if ($("text3_" + elm.entryIndex).innerHTML != ""){
+				$("text3_" + elm.entryIndex).style.display = "block";
+			}
 			elm.currentState = STATE_OPEN;
 		}else if (elm.currentState == STATE_OPEN){
 			$("text2_" + elm.entryIndex).style.display = "none";
+			$("text3_" + elm.entryIndex).style.display = "none";
 			elm.currentState = STATE_CLOSED;
 		}
 		var diff = elm.offsetTop + elm.offsetHeight - window.pageYOffset - window.innerHeight + 5;
@@ -175,9 +179,22 @@ function FlashCards()
 				hideItem(this.entryIndex);
 			}
 
+			var elmText3 = document.createElement("div");
+			elmText3.className = "entry_text3";
+			elmText3.id = "text3_" + i;
+			elmText3.innerHTML = m_entries[i][2];
+			elmText3.style.display = "none";
+			elmText3.entryIndex = i;
+
+			elmText3.onclick = function ()
+			{
+				hideItem(this.entryIndex);
+			}
+
 			elm.appendChild(elmIndex);
 			elm.appendChild(elmText1);
 			elm.appendChild(elmText2);
+			elm.appendChild(elmText3);
 			
 			$("section_cards").appendChild(elm);
 		}
