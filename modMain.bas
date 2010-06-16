@@ -128,7 +128,8 @@ Dim index           As Integer
                     IIf(r = 1, "", ",") + "[" + _
                     formatEntry(sht.Range("A" + CStr(r)).Value) + "," + _
                     formatEntry(sht.Range("B" + CStr(r)).Value) + "," + _
-                    formatEntry(sht.Range("C" + CStr(r)).Value) + "]" + vbCrLf
+                    formatEntry(sht.Range("C" + CStr(r)).Value) + "," + _
+                    formatEntry(sht.Range("D" + CStr(r)).Value) + "]" + vbCrLf
                 r = r + 1
             Loop
             strRet = strRet + "];" + vbCrLf + vbCrLf

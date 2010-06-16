@@ -182,7 +182,9 @@ function FlashCards()
 			var elmText3 = document.createElement("div");
 			elmText3.className = "entry_text3";
 			elmText3.id = "text3_" + i;
-			elmText3.innerHTML = m_entries[i][2];
+			if (m_entries[i][2] != ""){
+				elmText3.innerHTML = "<i>" + m_entries[i][2] + "</i><br>" + m_entries[i][3];
+			}
 			elmText3.style.display = "none";
 			elmText3.entryIndex = i;
 
