@@ -1,4 +1,5 @@
 body              { color: #000000; }
+b                 { color: #006600; }
 
 div.collection_entry     { background-color: #EEEEEE; border-style: solid; border-color: #BBBBBB; border-width:1px; padding: 8px; margin: 5px; cursor: pointer; }
 div.collection_name      { font-size:10pt; color: #6699CC; }
