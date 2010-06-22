@@ -203,6 +203,7 @@ function FlashCards()
 		
 		m_intCurrentIndex = 0;
 		moveFocus(-1, m_intCurrentIndex);
+		window.scroll(0, 0);
 		
 		updateCount();
 	}
