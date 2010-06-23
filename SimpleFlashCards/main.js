@@ -168,6 +168,22 @@ function keyDown_startPage(e)
 		
 		moveFocus(intCurrentMenuIndex, updatedIndex);
 
+		// scroll
+		if (updatedIndex != -1){
+			var offset = $("collection_entries").childNodes.item(updatedIndex).offsetTop;
+			if (e.keyCode == 38) {
+				if (intCurrentMenuIndex == 0 && updatedIndex == 0){
+					window.scroll(0, 0);
+				}else if(offset < (window.pageYOffset +(window.innerHeight * 0.2))){
+					window.scroll(0, offset - (window.innerHeight * 0.2));
+				}
+			}else if (e.keyCode == 40 && offset > (window.pageYOffset + (window.innerHeight * 0.7))){
+				window.scroll(0, offset - (window.innerHeight * 0.7));
+			}
+		}else{
+			window.scroll(0, 0);
+		}
+
 		intCurrentMenuIndex = updatedIndex;
 	}else if(e.charCode == 63557 || e.keyCode == 13){
 		if (intCurrentMenuIndex != -1){
